@@ -1,0 +1,45 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C: new .h and .c file",
+            "command": "touch ${input:file_name}.c && echo -e  \"#include <stdio.h>\\n#include <stdlib.h>\\n\\nvoid ${input:file_name}(){\\n\\n}\" > ${input:file_name}.c && touch ${input:file_name}.h && echo -e \"#ifndef __${input:file_name}_H__ \\n #define __${input:file_name}_H__ \\n \\n #endif\" > ${input:file_name}.h",
+            "options": {
+                "cwd": "${workspaceFolder}/src"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C: gcc build debug project",
+            "command": "make debug",
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C: gcc build project",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C: gcc build and run project",
+            "command": "make run",
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "file_name",
+            "description": "File name",
+            "default": "arq",
+            "type": "promptString"
+        }
+    ],
+    "version": "2.0.0"
+}
