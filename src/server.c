@@ -8,21 +8,21 @@
 
 #define MAX_CLIENTS 5
 
-int clients[MAX_CLIENTS];
-int client_count = 0;
-int PORT;
+int clients[MAX_CLIENTS]; // Array para armazenar os sockets dos clientes
+int client_count = 0; // Contagem de clientes conectados
+int PORT; // Porta na qual o servidor escutará
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para garantir exclusão mútua entre threads
 
 // Função que lida com as conexões dos clientes
 void *handle_client(void *socket_desc) {
-    int client_socket = *(int *)socket_desc;
+    int client_socket = *(int *)socket_desc; // Obtenha o socket do cliente da estrutura
     char buffer[1024];
     int read_size;
 
     while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[read_size] = '\0';
-        
+
         // Bloquear o acesso à lista de clientes para evitar concorrência
         pthread_mutex_lock(&mutex);
 
@@ -40,7 +40,7 @@ void *handle_client(void *socket_desc) {
     if (read_size == 0) {
         // Cliente desconectado
         printf("Cliente desconectado\n");
-        
+
         // Remover o cliente da lista de clientes
         pthread_mutex_lock(&mutex);
         for (int i = 0; i < client_count; i++) {
@@ -76,8 +76,8 @@ void *send_messages(void *unused) {
 }
 
 int main() {
-
-    printf("Defina a porta desse servidor:");
+    // Solicitar ao usuário para definir a porta do servidor
+    printf("Defina a porta desse servidor: ");
     scanf("%d", &PORT);
 
     int server_socket, new_socket, c;
