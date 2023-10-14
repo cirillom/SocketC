@@ -1,40 +1,19 @@
-CC ?= gcc
-ZIP ?= 7za
-PDFLAGS += -march=native
-CFLAGS += -Wall -Wextra -Wpedantic
-LDFLAGS += -lm
-VDFLAGS += --leak-check=full --show-leak-kinds=all -s
+all: server client
 
-SRCDIRS = $(sort $(dir $(wildcard src/*/)))
-INC_PARAMS = $(addprefix -I ,$(SRCDIRS))
+runserver: server
+	./server
 
-program ?= build/program
+runclient: client
+	./client
 
-ZIPFILE    ?= ../zipfile.zip
-CFILES      = $(wildcard src/*.c) $(wildcard src/**/*.c)
+server: ./src/server.c
+	gcc ./src/server.c -o server
 
-.PHONY: all clean zip run test debug
-
-all: PDFLAGS += -O3
-all: $(program)
+client: ./src/client.c
+	gcc ./src/client.c -o client
 
 clean:
-	@rm -f $(ZIPFILE)
-	@rm -rf build/
-
-zip: clean
-	$(ZIP) a $(ZIPFILE) ./*
-
-run: $(program)
-	@./$(program) $(ARGS)
-
-debug: CFLAGS+= -g
-debug: clean
-debug: $(program)
-
-$(program): $(CFILES)
-	@mkdir -p build
-	$(CC) $(CFLAGS) $(INC_PARAMS) -o $@ $^ $(LDFLAGS) $(PDFLAGS)
-
-valgrind: $(program)
-	valgrind $(VDFLAGS) ./$(program)
+	rm server client *.zip
+	
+zip:
+	zip trab1 *.c Makefile 
