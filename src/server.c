@@ -20,7 +20,7 @@ void *handle_client(void *socket_desc) {
     char buffer[1024];
     int read_size;
 
-    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0) > 0)) {
+    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[read_size] = '\0';
 
         // Bloquear o acesso à lista de clientes para evitar concorrência
