@@ -6,13 +6,11 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
-#define SERVER_IP "127.0.0.1"
+#define SERVER_IP "127.0.0.1" // Endereço IP do servidor
+char nome[50]; // Nome do cliente
+int PORT; // Porta para conexão com o servidor
 
-char nome[50];
-int PORT;
-
-
-//Função com o único intuito de remover o '\n' no final do nome coletado.
+// Função para remover o caractere de nova linha ("\n") do final de uma string
 void removeNewlineAtEndOfName(char *str) {
     int len = strlen(str);
     if (len > 0 && str[len - 1] == '\n') {
@@ -20,6 +18,7 @@ void removeNewlineAtEndOfName(char *str) {
     }
 }
 
+// Função para receber mensagens do servidor
 void *receive_messages(void *socket_desc) {
     int client_socket = *(int *)socket_desc;
     char server_response[1024];
@@ -28,7 +27,6 @@ void *receive_messages(void *socket_desc) {
         int read_size = recv(client_socket, server_response, sizeof(server_response), 0);
         if (read_size > 0) {
             server_response[read_size] = '\0';
-            //printf("\nMensagem do servidor: %s", server_response);
             printf("%s\n", server_response);
         }
     }
@@ -40,7 +38,7 @@ int main() {
     int client_socket;
     struct sockaddr_in server;
 
-    // Escolhe o nome que será visto pelos outro clients
+    // Escolhe o nome que será visto pelos outros clientes
     printf("Escolha seu nome: ");
     fgets(nome, sizeof(nome), stdin);
     removeNewlineAtEndOfName(nome);
@@ -82,15 +80,13 @@ int main() {
             break;
         }
 
-        printf("\n");
-
-        // Monta a mensagem a ser enviadada como: "Nome:Mensagem"
+        // Monta a mensagem a ser enviada como "Nome: Mensagem"
         char result[1024] = "";
         strcat(result, nome);
         strcat(result, ": ");
         strcat(result, message);
 
-        //Envia a mensagem
+        // Envia a mensagem para o servidor
         send(client_socket, result, strlen(result), 0);
     }
 
