@@ -4,6 +4,7 @@ O código consiste de um .c para o servidor e um .c para o cliente.
 
 ## Rodando o código
 Para rodar o server utiliza `make runserver`
+
 Para rodar o cliente utilize `make runclient`
 
 Execute o servidor primeiro e defina a porta do servidor. Após isso execute o cliente, defina a porta do servidor ao qual o cliente conectará e o o nome do cliente, esse é o nome que aparecerá aos outros clientes quando você enviar uma mensagem.
