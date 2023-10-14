@@ -6,11 +6,11 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
-#define PORT 8080
 #define MAX_CLIENTS 5
 
 int clients[MAX_CLIENTS];
 int client_count = 0;
+int PORT;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -76,6 +76,10 @@ void *send_messages(void *unused) {
 }
 
 int main() {
+
+    printf("Defina a porta desse servidor:");
+    scanf("%d", &PORT);
+
     int server_socket, new_socket, c;
     struct sockaddr_in server, client;
     pthread_t thread, message_thread;
