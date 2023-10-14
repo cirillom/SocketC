@@ -4,14 +4,29 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <pthread.h>
 
+#define SERVER_IP "127.0.0.1"
 #define PORT 8080
+
+void *receive_messages(void *socket_desc) {
+    int client_socket = *(int *)socket_desc;
+    char server_response[1024];
+
+    while (1) {
+        int read_size = recv(client_socket, server_response, sizeof(server_response), 0);
+        if (read_size > 0) {
+            server_response[read_size] = '\0';
+            printf("\nMensagem do servidor: %s", server_response);
+        }
+    }
+
+    return NULL;
+}
 
 int main() {
     int client_socket;
     struct sockaddr_in server;
-    char message[1024];
-    char server_response[1024];
 
     // Criação do socket
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -20,7 +35,7 @@ int main() {
         return 1;
     }
 
-    server.sin_addr.s_addr = inet_addr("127.0.0.1"); // Endereço do servidor
+    server.sin_addr.s_addr = inet_addr(SERVER_IP);
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
 
@@ -30,25 +45,28 @@ int main() {
         return 1;
     }
 
-    printf("Conectado ao servidor. Digite 'exit' para sair.\n");
+    printf("Conectado ao servidor. Você pode enviar mensagens (ou 'exit' para sair):\n");
 
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, receive_messages, (void *)&client_socket) < 0) {
+        perror("Erro na criação da thread");
+        return 1;
+    }
+
+    char message[1024];
     while (1) {
-        printf("Digite uma mensagem para enviar ao servidor: ");
+        // Envie uma mensagem para o servidor
         fgets(message, sizeof(message), stdin);
-
-        // Enviar mensagem para o servidor
-        send(client_socket, message, strlen(message), 0);
 
         if (strcmp(message, "exit\n") == 0) {
             break;
         }
 
-        // Receber resposta do servidor
-        memset(server_response, 0, sizeof(server_response));
-        recv(client_socket, server_response, sizeof(server_response), 0);
-        printf("Resposta do servidor: %s", server_response);
+        send(client_socket, message, strlen(message), 0);
     }
 
+    // Aguarda a thread de recebimento de mensagens terminar
+    pthread_join(thread, NULL);
     close(client_socket);
 
     return 0;

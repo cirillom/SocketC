@@ -20,7 +20,7 @@ void *handle_client(void *socket_desc) {
     char buffer[1024];
     int read_size;
 
-    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0) > 0)) {
+    while ((read_size = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[read_size] = '\0';
         
         // Bloquear o acesso à lista de clientes para evitar concorrência
@@ -62,10 +62,23 @@ void *handle_client(void *socket_desc) {
     return NULL;
 }
 
+// Função para enviar mensagens para todos os clientes periodicamente
+void *send_messages(void *unused) {
+    while (1) {
+        char message[] = "Mensagem do servidor para todos os clientes.";
+        pthread_mutex_lock(&mutex);
+        for (int i = 0; i < client_count; i++) {
+            send(clients[i], message, strlen(message), 0);
+        }
+        pthread_mutex_unlock(&mutex);
+        sleep(10); // Envie a cada 10 segundos, ajuste conforme necessário
+    }
+}
+
 int main() {
     int server_socket, new_socket, c;
     struct sockaddr_in server, client;
-    pthread_t thread;
+    pthread_t thread, message_thread;
 
     // Inicializar a lista de clientes
     for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -121,6 +134,15 @@ int main() {
         perror("Erro na aceitação da conexão");
         return 1;
     }
+
+    // Iniciar a thread para enviar mensagens periodicamente
+    if (pthread_create(&message_thread, NULL, send_messages, NULL) < 0) {
+        perror("Erro na criação da thread de envio de mensagens");
+        return 1;
+    }
+
+    // Aguardar o encerramento da thread de envio de mensagens
+    pthread_join(message_thread, NULL);
 
     return 0;
 }
