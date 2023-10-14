@@ -8,7 +8,7 @@ VDFLAGS += --leak-check=full --show-leak-kinds=all -s
 SRCDIRS = $(sort $(dir $(wildcard src/*/)))
 INC_PARAMS = $(addprefix -I ,$(SRCDIRS))
 
-EXECUTABLE ?= build/program
+program ?= build/program
 
 ZIPFILE    ?= ../zipfile.zip
 CFILES      = $(wildcard src/*.c) $(wildcard src/**/*.c)
@@ -16,26 +16,25 @@ CFILES      = $(wildcard src/*.c) $(wildcard src/**/*.c)
 .PHONY: all clean zip run test debug
 
 all: PDFLAGS += -O3
-all: $(EXECUTABLE)
+all: $(program)
 
 clean:
 	@rm -f $(ZIPFILE)
 	@rm -rf build/
-	@rm -rf out/*.csv
 
 zip: clean
 	$(ZIP) a $(ZIPFILE) ./*
 
-run: $(EXECUTABLE)
-	@./$(EXECUTABLE) $(ARGS)
+run: $(program)
+	@./$(program) $(ARGS)
 
 debug: CFLAGS+= -g
 debug: clean
-debug: $(EXECUTABLE)
+debug: $(program)
 
-$(EXECUTABLE): $(CFILES)
+$(program): $(CFILES)
 	@mkdir -p build
 	$(CC) $(CFLAGS) $(INC_PARAMS) -o $@ $^ $(LDFLAGS) $(PDFLAGS)
 
-valgrind: $(EXECUTABLE)
-	valgrind $(VDFLAGS) ./$(EXECUTABLE)
+valgrind: $(program)
+	valgrind $(VDFLAGS) ./$(program)
