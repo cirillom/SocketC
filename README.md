@@ -21,7 +21,7 @@ Você recebe no seu cliente as mensagens que todos os clientes conectados ao mes
 
 ## Membros
  - [Artur Brenner Weber](github.com/arturweber) - 12675451 - arturweber@usp.br
- - Gustavo Barbosa Sanchez, 11802440 - 11802440@usp.br
+ - Gustavo Barbosa Sanchez - 11802440 - 11802440@usp.br
  - [Gustavo Moura Scarenci](https://github.com/GuScarenci) - 12547792 - gustavomourascarenci@usp.br
  - [Matheus Cirillo](github.com/cirillom) - 12547750 - matheuscirillo@usp.br
  - Pedro Oliveira Torrente - 11798853 - pedrotorrente@usp.br
